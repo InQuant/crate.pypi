@@ -397,7 +397,7 @@ class PyPIPackage(object):
                                         "If-Modified-Since": stored_file_data["modified"],
                                     }
 
-                    resp = requests.get(file_data["file"], headers=headers, prefetch=True)
+                    resp = requests.get(file_data["file"], headers=headers, stream=False)
 
                     if resp.status_code == 304:
                         logger.info("[DOWNLOAD] skipping %(filename)s because it has not been modified" % {"filename": release_file.filename})
@@ -482,13 +482,13 @@ class PyPIPackage(object):
         if self.datastore.get(SERVERKEY_KEY):
             key = load_key(self.datastore.get(SERVERKEY_KEY))
         else:
-            serverkey = requests.get(SERVERKEY_URL, prefetch=True)
+            serverkey = requests.get(SERVERKEY_URL, stream=False)
             key = load_key(serverkey.content)
             self.datastore.set(SERVERKEY_KEY, serverkey.content)
 
         try:
             # Download the "simple" page from PyPI for this package
-            simple = requests.get(urlparse.urljoin(SIMPLE_URL, urllib.quote(self.name.encode("utf-8"))), prefetch=True)
+            simple = requests.get(urlparse.urljoin(SIMPLE_URL, urllib.quote(self.name.encode("utf-8"))), stream=False)
             simple.raise_for_status()
         except requests.HTTPError:
             if simple.status_code == 404:
@@ -500,7 +500,7 @@ class PyPIPackage(object):
 
         try:
             # Download the "serversig" page from PyPI for this package
-            serversig = requests.get(urlparse.urljoin(SERVERSIG_URL, urllib.quote(self.name.encode("utf-8"))), prefetch=True)
+            serversig = requests.get(urlparse.urljoin(SERVERSIG_URL, urllib.quote(self.name.encode("utf-8"))), stream=False)
             serversig.raise_for_status()
         except requests.HTTPError:
             if serversig.status_code == 404:
