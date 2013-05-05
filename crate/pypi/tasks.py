@@ -40,7 +40,7 @@ def process(name, version, timestamp, action, matches):
 
 def remove(name, version, timestamp, action, matches):
     package = PyPIPackage(name, version)
-    package.delete()
+    eackage.delete()
 
 
 def remove_file(name, version, timestamp, action, matches):
@@ -203,7 +203,7 @@ def fetch_server_key(package):
 
 @task
 def refresh_pypi_package_index_cache():
-    r = requests.get("http://pypi.python.org/simple/", prefetch=True)
+    r = requests.get("http://pypi.python.org/simple/", stream=False)
     PyPIIndexPage.objects.create(content=r.content)
 
 
